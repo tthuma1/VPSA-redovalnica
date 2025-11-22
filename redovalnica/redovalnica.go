@@ -2,64 +2,79 @@ package redovalnica
 
 import "fmt"
 
-type Student struct {
-	ime     string
-	priimek string
-	ocene   []int
+type Redovalnica struct {
+	stOcen   int
+	minOcena int
+	maxOcena int
+	studenti map[string]Student
 }
 
-func DodajOceno(studenti map[string]Student, vpisnaStevilka string, ocena int) {
-	if ocena < 1 {
-		fmt.Println("Ocena", ocena, "je premajhna!")
+type Student struct {
+	Ime     string
+	Priimek string
+	Ocene   []int
+}
+
+func UstvariRedovalnico(stOcen int, minOcena int, maxOcena int) *Redovalnica {
+	return &Redovalnica{stOcen, minOcena, maxOcena, make(map[string]Student)}
+}
+
+func (r *Redovalnica) DodajStudenta(vpisnaStevilka string, student Student) {
+	r.studenti[vpisnaStevilka] = student
+}
+
+func (r *Redovalnica) DodajOceno(vpisnaStevilka string, ocena int) {
+	if ocena < r.minOcena {
+		fmt.Println("Ocena", ocena, "je premajhna! Najmanjša možna ocena je", r.minOcena)
 		return
 	}
 
-	if ocena > 10 {
-		fmt.Println("Ocena", ocena, "je prevelika!")
+	if ocena > r.maxOcena {
+		fmt.Println("Ocena", ocena, "je prevelika! Največja možna ocena je", r.maxOcena)
 		return
 	}
 
-	student, ok := studenti[vpisnaStevilka]
+	student, ok := r.studenti[vpisnaStevilka]
 	if !ok {
 		fmt.Println("Študent z vpisno številko", vpisnaStevilka, "ne obstaja!")
 		return
 	}
 
-	student.ocene = append(student.ocene, ocena)
-	studenti[vpisnaStevilka] = student
+	student.Ocene = append(student.Ocene, ocena)
+	r.studenti[vpisnaStevilka] = student
 }
 
-func povprecje(studenti map[string]Student, vpisnaStevilka string) float64 {
-	student, ok := studenti[vpisnaStevilka]
+func (r *Redovalnica) povprecje(vpisnaStevilka string) float64 {
+	student, ok := r.studenti[vpisnaStevilka]
 	if !ok {
 		return -1.0
 	}
 
-	if len(student.ocene) < 6 {
+	if len(student.Ocene) < r.stOcen {
 		return 0.0
 	}
 
 	sum := 0
 
-	for _, ocena := range student.ocene {
+	for _, ocena := range student.Ocene {
 		sum += ocena
 	}
 
-	return float64(sum) / float64(len(student.ocene))
+	return float64(sum) / float64(len(student.Ocene))
 }
 
-func IzpisRedovalnice(studenti map[string]Student) {
+func (r *Redovalnica) IzpisRedovalnice() {
 	fmt.Println("REDOVALNICA:")
 
-	for vpisnaStevilka, student := range studenti {
-		fmt.Println(vpisnaStevilka, "-", student.ime, student.priimek+":", student.ocene)
+	for vpisnaStevilka, student := range r.studenti {
+		fmt.Println(vpisnaStevilka, "-", student.Ime, student.Priimek+":", student.Ocene)
 	}
 }
 
-func IzpisiKoncniUspeh(studenti map[string]Student) {
-	for vpisnaStevilka, student := range studenti {
-		povp := povprecje(studenti, vpisnaStevilka)
-		fmt.Printf("%s %s: povprečna ocena %.1f -> ", student.ime, student.priimek, povp)
+func (r *Redovalnica) IzpisiKoncniUspeh() {
+	for vpisnaStevilka, student := range r.studenti {
+		povp := r.povprecje(vpisnaStevilka)
+		fmt.Printf("%s %s: povprečna ocena %.1f -> ", student.Ime, student.Priimek, povp)
 
 		if povp >= 9 {
 			fmt.Println("Odličen študent!")

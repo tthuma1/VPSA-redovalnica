@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"context"
@@ -6,65 +6,71 @@ import (
 	"log"
 	"os"
 
+	"github.com/tthuma1/VPSA-redovalnica/redovalnica"
 	"github.com/urfave/cli/v3"
 )
 
 func main() {
 	cmd := &cli.Command{
-		Name:  "weatherStation",
-		Usage: "Weather station displays Temperature, Humidity, and Pressure",
+		Name:  "redovalnica",
+		Usage: "Redovalnica je aplikacija za hranjenje ocen in računanje končnega uspeha.",
 		Flags: []cli.Flag{
 			&cli.IntFlag{
-				Name:  "timeout",
-				Usage: "Timeout for reading sensor in seconds",
-				Value: 5,
+				Name:  "stOcen",
+				Usage: "Najmanjše število ocen potrebnih za pozitivno oceno",
+				Value: 6,
 			},
 			&cli.IntFlag{
-				Name:  "pollTime",
-				Usage: "Sensor refresh interval in ms",
-				Value: 500,
+				Name:  "minOcena",
+				Usage: "Najmanjša možna ocena",
+				Value: 1,
+			},
+			&cli.IntFlag{
+				Name:  "maxOcena",
+				Usage: "Največja možna ocena",
+				Value: 10,
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			timeoutSec := cmd.Int("timeout")
-			pollTime := cmd.Int("pollTime")
-			return runTUI(pollTime, timeoutSec)
+			stOcen := cmd.Int("stOcen")
+			minOcena := cmd.Int("minOcena")
+			maxOcena := cmd.Int("maxOcena")
+			run(stOcen, minOcena, maxOcena)
+			return nil
 		},
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
+}
 
-	studenti := make(map[string]Student)
+func run(stOcen int, minOcena int, maxOcena int) {
+	r := redovalnica.UstvariRedovalnico(stOcen, minOcena, maxOcena)
 
-	student1 := Student{"Janez", "Novak", []int{8, 9, 7}}
-	studenti["63230111"] = student1
+	r.DodajStudenta("63230111", redovalnica.Student{Ime: "Janez", Priimek: "Novak", Ocene: []int{8, 9, 7}})
 
-	student2 := Student{"Polona", "Polončič", []int{}}
-	studenti["63220222"] = student2
+	r.DodajStudenta("63220222", redovalnica.Student{Ime: "Polona", Priimek: "Polončič", Ocene: []int{}})
 
-	student3 := Student{"Marcuss", "Favela", []int{7}}
-	studenti["63240333"] = student3
+	r.DodajStudenta("63240333", redovalnica.Student{Ime: "Marcuss", Priimek: "Favela", Ocene: []int{7}})
 
-	student4 := Student{"Odlični", "Odličnjakovič", []int{10, 9, 10, 10, 9, 9}}
-	studenti["63240444"] = student4
+	r.DodajStudenta("63240444", redovalnica.Student{Ime: "Odlični", Priimek: "Odličnjakovič", Ocene: []int{10, 9, 10, 10, 9, 9}})
 
-	dodajOceno(studenti, "63230111", 6)
-	dodajOceno(studenti, "63230111", 9)
-	dodajOceno(studenti, "63230111", 10)
+	r.DodajOceno("63230111", 6)
+	r.DodajOceno("63230111", 9)
+	r.DodajOceno("63230111", 10)
 
-	dodajOceno(studenti, "63230111", 11)
-	dodajOceno(studenti, "63230111", 0)
-	dodajOceno(studenti, "82934", 7)
+	r.DodajOceno("63230111", 11)
+	r.DodajOceno("63230111", 0)
+	r.DodajOceno("82934", 7)
 
-	fmt.Println("Povprečje študenta 63230111:", povprecje(studenti, "63230111"))
-	fmt.Println("Povprečje študenta 63220222:", povprecje(studenti, "63220222"))
-	fmt.Println("Povprečje študenta 9304329:", povprecje(studenti, "9304329"))
+	// fmt.Println("Povprečje študenta 63230111:", povprecje("63230111"))
+	// fmt.Println("Povprečje študenta 63220222:", povprecje("63220222"))
+	// fmt.Println("Povprečje študenta 9304329:", povprecje("9304329"))
 
 	fmt.Println()
-	izpisRedovalnice(studenti)
+	r.IzpisRedovalnice()
 
 	fmt.Println()
-	izpisiKoncniUspeh(studenti)
+	r.IzpisiKoncniUspeh()
 }
