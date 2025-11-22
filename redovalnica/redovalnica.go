@@ -1,7 +1,12 @@
+// Package redovalnica provides a simple gradebook system for managing students,
+// storing their grades, enforcing grade boundaries, and computing final results
+// based on configurable grading rules.
+
 package redovalnica
 
 import "fmt"
 
+// Redovalnica represents a gradebook with specific grading rules and a collection of students.
 type Redovalnica struct {
 	stOcen   int
 	minOcena int
@@ -9,20 +14,24 @@ type Redovalnica struct {
 	studenti map[string]Student
 }
 
+// Student represents a student with a name, surname, and a list of grades.
 type Student struct {
 	Ime     string
 	Priimek string
 	Ocene   []int
 }
 
+// UstvariRedovalnico creates a new Redovalnica with specified grading rules.
 func UstvariRedovalnico(stOcen int, minOcena int, maxOcena int) *Redovalnica {
 	return &Redovalnica{stOcen, minOcena, maxOcena, make(map[string]Student)}
 }
 
+// DodajStudenta adds a new student to the gradebook.
 func (r *Redovalnica) DodajStudenta(vpisnaStevilka string, student Student) {
 	r.studenti[vpisnaStevilka] = student
 }
 
+// DodajOceno adds a grade to a student's record, enforcing grade boundaries.
 func (r *Redovalnica) DodajOceno(vpisnaStevilka string, ocena int) {
 	if ocena < r.minOcena {
 		fmt.Println("Ocena", ocena, "je premajhna! Najmanjša možna ocena je", r.minOcena)
@@ -44,6 +53,8 @@ func (r *Redovalnica) DodajOceno(vpisnaStevilka string, ocena int) {
 	r.studenti[vpisnaStevilka] = student
 }
 
+// povprecje calculates the average grade for a student if they have enough grades.
+// If the sutdent doesn't have enough grades, it returns 0.0. If the student does not exist, it returns -1.0.
 func (r *Redovalnica) povprecje(vpisnaStevilka string) float64 {
 	student, ok := r.studenti[vpisnaStevilka]
 	if !ok {
@@ -63,6 +74,7 @@ func (r *Redovalnica) povprecje(vpisnaStevilka string) float64 {
 	return float64(sum) / float64(len(student.Ocene))
 }
 
+// IzpisRedovalnice prints the list of students along with their grades.
 func (r *Redovalnica) IzpisRedovalnice() {
 	fmt.Println("REDOVALNICA:")
 
@@ -71,6 +83,7 @@ func (r *Redovalnica) IzpisRedovalnice() {
 	}
 }
 
+// IzpisiKoncniUspeh prints the final success evaluation for each student based on their average grade.
 func (r *Redovalnica) IzpisiKoncniUspeh() {
 	for vpisnaStevilka, student := range r.studenti {
 		povp := r.povprecje(vpisnaStevilka)
