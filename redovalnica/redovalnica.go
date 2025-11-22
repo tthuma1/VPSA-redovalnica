@@ -65,7 +65,7 @@ func (r *Redovalnica) DodajOceno(vpisnaStevilka string, ocena int) {
 }
 
 // povprecje calculates the average grade for a student if they have enough grades.
-// If the sutdent doesn't have enough grades, it returns 0.0. If the student does not exist, it returns -1.0.
+// If the student doesn't have enough grades, it returns 0.0. If the student does not exist, it returns -1.0.
 func (r *Redovalnica) povprecje(vpisnaStevilka string) float64 {
 	student, ok := r.studenti[vpisnaStevilka]
 	if !ok {
