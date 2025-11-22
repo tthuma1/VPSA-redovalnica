@@ -1,7 +1,18 @@
 // Package redovalnica provides a simple gradebook system for managing students,
 // storing their grades, enforcing grade boundaries, and computing final results
 // based on configurable grading rules.
-
+//
+// Example usage:
+//
+// r := redovalnica.UstvariRedovalnico(3, 1, 10) // need 3 grades, valid range 1..10
+// r.DodajStudenta("1001", redovalnica.Student{Ime: "Ana", Priimek: "Horvat"})
+// r.DodajOceno("1001", 9)
+// r.DodajOceno("1001", 8)
+// r.DodajOceno("1001", 10)
+// fmt.Println("=== Izpis redovalnice ===")
+// r.IzpisRedovalnice()
+// fmt.Println("\n=== Končni uspeh ===")
+// r.IzpisiKoncniUspeh()
 package redovalnica
 
 import "fmt"
