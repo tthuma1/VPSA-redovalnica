@@ -47,7 +47,7 @@ r.DodajOceno("1001", 9)
 r.DodajOceno("1001", 8)
 r.DodajOceno("1001", 10)
 fmt.Println("=== Izpis redovalnice ===")
-r.IzpisRedovalnice()
+r.IzpisVsehOcen()
 fmt.Println("\n=== Končni uspeh ===")
 r.IzpisiKoncniUspeh()
 ```

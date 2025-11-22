@@ -10,7 +10,7 @@
 // r.DodajOceno("1001", 8)
 // r.DodajOceno("1001", 10)
 // fmt.Println("=== Izpis redovalnice ===")
-// r.IzpisRedovalnice()
+// r.IzpisVsehOcen()
 // fmt.Println("\n=== Končni uspeh ===")
 // r.IzpisiKoncniUspeh()
 package redovalnica
@@ -85,8 +85,8 @@ func (r *Redovalnica) povprecje(vpisnaStevilka string) float64 {
 	return float64(sum) / float64(len(student.Ocene))
 }
 
-// IzpisRedovalnice prints the list of students along with their grades.
-func (r *Redovalnica) IzpisRedovalnice() {
+// IzpisVsehOcen prints the list of students along with their grades.
+func (r *Redovalnica) IzpisVsehOcen() {
 	fmt.Println("REDOVALNICA:")
 
 	for vpisnaStevilka, student := range r.studenti {
@@ -100,9 +100,11 @@ func (r *Redovalnica) IzpisiKoncniUspeh() {
 		povp := r.povprecje(vpisnaStevilka)
 		fmt.Printf("%s %s: povprečna ocena %.1f -> ", student.Ime, student.Priimek, povp)
 
-		if povp >= 9 {
+		razponOcen := r.maxOcena - r.minOcena + 1
+
+		if povp >= 0.9*float64(razponOcen) {
 			fmt.Println("Odličen študent!")
-		} else if povp >= 6 {
+		} else if povp >= 0.6*float64(razponOcen) {
 			fmt.Println("Povprečen študent")
 		} else {
 			fmt.Println("Neuspešen študent")

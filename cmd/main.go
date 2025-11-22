@@ -69,7 +69,7 @@ func run(stOcen int, minOcena int, maxOcena int) {
 	// fmt.Println("Povprečje študenta 9304329:", povprecje("9304329"))
 
 	fmt.Println()
-	r.IzpisRedovalnice()
+	r.IzpisVsehOcen()
 
 	fmt.Println()
 	r.IzpisiKoncniUspeh()
